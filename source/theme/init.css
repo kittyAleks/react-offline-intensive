@@ -1,5 +1,6 @@
-@import 'reset-css';
+@import 'sanitize.css';
 @import './palette';
-@import './animations';
 @import './globals';
 @import './breakpoints';
+
+@import './components/start';
