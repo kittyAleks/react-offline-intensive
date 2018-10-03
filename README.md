@@ -84,7 +84,7 @@ npm install -g yo @lectrum/generator-ui
 8. Склонируй этот проект:
 
 ```bash
-git clone https://github.com/lectrum/react-intensive.git
+git clone https://github.com/Lectrum/react-intensive.git
 ```
 
 9. Перейди в проект, выполнив команду:
