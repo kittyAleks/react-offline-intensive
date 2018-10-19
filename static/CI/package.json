@@ -1,5 +1,5 @@
 {
-    "name": "learn-webpack",
+    "name": "lectrum-education",
     "scripts": {
       "start": "serve --single"
     },
