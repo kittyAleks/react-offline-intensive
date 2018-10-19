@@ -10,7 +10,7 @@
         "react": "16.5.2",
         "react-dom": "16.5.2",
         "react-transition-group": "2.5.0",
-        "sanitize.css": "7.0.3",
+        "sanitize.css": "8.0.0",
         "socket.io-client": "2.1.1"
     }
 }
