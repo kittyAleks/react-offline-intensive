@@ -20,7 +20,7 @@
     align-items: center;
     justify-content: center;
     padding: 2px 10px;
-    background-color: transparent;
+    background-color: var(--paletteColor6);
     color: white;
     font-size: 14px;
     font-weight: 700;
@@ -46,7 +46,7 @@
     }
 
     &:hover {
-      background: rgba(0, 0, 0, 0.1);
+      background: #71cb8d;
     }
   }
 

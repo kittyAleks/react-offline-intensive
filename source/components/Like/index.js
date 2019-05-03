@@ -1,108 +1,114 @@
 // Core
 import React, { Component} from 'react';
-import { string, func, arrayOf, shape} from 'prop-types'; //валидация
+import { string, func, arrayOf, shape } from 'prop-types'; //валидация
 import cx from 'classnames';
 
 //Instruments
 import Styles from './styles.m.css';
-import { withProfile} from  '../../HOC';
 
-export class Like extends Component { // синтаксис для render
+export default class Like extends Component {
     static propTypes = {
-        likePost: func.isRequired,
-        id: string.isRequired,
-        likes: arrayOf(
+        _likePost:  func.isRequired,
+        id:         string.isRequired,
+        likes:      arrayOf(
             shape({
-                firstName: string.isRequire,
-                lastName: string.isRequire,
-            })
+                id:         string.isRequired,
+                firstName:  string.isRequired,
+                lastName:   string.isRequired,
+            }),
         ).isRequired,
     };
-    static defaultProps = {
-        likes: []
-    };
+
+    constructor() {
+        super();
+
+        this._getLikedByMe = this._getLikedByMe.bind(this);
+        this._getLikeStyles = this._getLikeStyles.bind(this);
+        this._likePost = this._likePost.bind(this);
+        this._showLikers = this._showLikers.bind(this);
+        this._hideLikers = this._hideLikers.bind(this);
+        this._getLikersList = this._getLikersList.bind(this);
+        this._getLikesDescription = this._getLikesDescription(this);
+    }
 
     state = {
-        showLikers: false,
+        _showLikers: false,
     };
 
-    _showLikers = () => this.setState({ showLikers: true })
-
-    _hideLikers = () => this.setState({ showLikers: false, });
-
-
-
-    _likePost = () => {
-        const { id, likePost} = this.props;
-        likePost(id);
-    };
-
-    _getLikeByMe = () => {
-        const { currentUserFirstName, currentUserLastName, likes } = this.props;
-
-        return likes.some(({ firstName, lastName }) => firstName === currentUserFirstName && lastName === currentUserLastName);
-    };
-
-    _getLikedStyles = () => {
-        const getLikeByMe = this._getLikeByMe();
-
-        return cx(Styles.icon, {
-            [Styles.liked]: getLikeByMe,
+    _showLikers() {
+        this.setState({
+            _showLikers: true
         });
-    };
+    }
 
-    _getLikersList = () => {
-        const {showLikers} = this.state;
-        const {likes} = this.props;
+    _hideLikers() {
+        this.setState({
+            _showLikers: false
+        });
+    }
 
-        const likesJSX = likes.map(({firstName, lastName, id}) => (
-            <li key={id}>
-                {firstName} {lastName}
-            </li>
+    _likePost() {
+        const { _likePost, id } = this.props;
+        _likePost(id);
+    }
+
+    // Описываем стили(_getLikedByMe, _getLikeStyles)
+    _getLikedByMe() { //  метод вернет true или false
+        const {currentUserFirstName, currentUserLastName, likes} = this.props;
+        return likes.some(({firstName, lastName}) => {
+            return (
+                `${firstName} ${lastName}` === `${currentUserFirstName} ${currentUserLastName}`
+            );
+        });
+    }
+
+    _getLikeStyles() { // вернет нужный стиль в зависимости от того, что вернет _getLikedByMe(т.е.true или false)
+        const likedByMe = this._getLikedByMe();
+        return cx(Styles.icon, {
+            [Styles.liked]: likedByMe,
+        });
+    }
+
+    // метод, возвращающий список пользователей, лайкнувших пост
+    _getLikersList() {
+        const { _showLikers } = this.state;
+        const { likes } = this.props;
+        const likesJSX = likes.map(({ firstName, lastName, id }) => ( // перебираем все лайки
+            <li key = { id }>{ `${firstName} ${lastName}` }</li>
         ));
-        return likes.length && showLikers ? <ul>{likesJSX}</ul> : null;
-    };
+        return likes.length && _showLikers ? <ul>{ likesJSX }</ul>:null;
+    }
 
-    _getLikersDescription = () => {
-
-        const {likes, currentUserFirstName, currentUserLastName} = this.props;
-        const likeByMe = this._getLikeByMe();
-
-        if (likes.length === 1 && likeByMe) {
-            return `${ currentUserFirstName } ${ currentUserLastName }`;
-        } else if (likes.length === 2 && likeByMe) {
-            return 'You and i other';
-        } else if (likeByMe) {
-            return `You and ${ likes.length - 1} others`;
+    _getLikesDescription() {
+        const {likes, currentUserFirstName, currentUserLastName } = this.props;
+        const likedByMe = this._getLikedByMe();
+        if(likes.length === 1 && likedByMe) { // если пост был лайкнут только текущим поль-ем, то отобразить...
+            return ` ${ currentUserFirstName } ${ currentUserLastName }`;
+        } else if(likes.length === 2 && likedByMe) {
+            return `You and ${ likes.length - 1 } other`;
+        } else if(likedByMe) { // если пред-ие условия не соблюдены, но пост все равно был лайкнут текущим поль-ем
+            return `You and ${ likes.length - 1 } others`;
         }
         return likes.length;
-    };
+    }
 
 
     render() {
-        const likers = this._getLikersList();
-        const likeStyles = this._getLikedStyles();
-        const likersDescription = this._getLikersDescription();
-
+        const likeStyles = this._getLikeStyles();
+        const likersList = this._getLikersList();
+        const likesDescription = this._getLikesDescription();
         return (
             <section className = { Styles.like }>
-                <span
-                    className = {likeStyles}
-                    onClick = {this._likePost}
-                >
-                    Like
-                </span>
+                <span className = { likeStyles } onClick = { this._likePost }>Like</span>
                 <div>
-                    {likers}
+                    { likersList }
                     <span
-                        onMouseEnter={this._showLikers}
-                        onMouseLeave={this._hideLikers}>
-                        {likersDescription}
+                        onMouseEnter = { this._showLikers }
+                        onMouseLeave = { this._hideLikers }>
+                        { likesDescription }
                     </span>
                 </div>
             </section>
         )
     }
 }
-
-export default withProfile(Like);

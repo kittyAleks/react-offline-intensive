@@ -8,5 +8,6 @@ import './theme/init';
 //Components
 import Root from './pages/Root';
 
-ReactDOM.render(<Root/>, document.getElementById('app'));
+ReactDOM.render(<Root/>, document.getElementById('app')); // инициализация приложения
+
 
